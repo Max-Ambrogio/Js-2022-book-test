@@ -93,6 +93,31 @@ body {
 		line-height: 140%;
 	}
 
+	.tooltip{
+		font-weight: 700;
+		color: black;
+		text-decoration: underline;
+	}
+
+	.tooltip:hover{
+		color: rebeccapurple;
+	}
+
+	.text-information{
+		background-color: black;
+		color: white;
+		position: absolute;
+		z-index: 1;
+		font-size: 20px;
+		padding: 20px;
+		// opacity: 0;
+	}
+
+	.text-information.show{
+		opacity: 1;
+		transition: 1s;
+	}
+
 	p.github {
 		font-size: 0.8em;
 
