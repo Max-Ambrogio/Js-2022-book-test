@@ -1,50 +1,93 @@
-// const { init } = require("browser-sync");
+(function() {
 
-(function(){
+    window.Tooltip = (function() {
 
-    //locate all span text, give them a class for each to apply a tooltip style.
-    window.newTooltip = (function(){
+        function handleMouseOver(evt) {
+            // console.log('mouseover', evt.target)
 
-        //creates class on all spans
-        function makeClass(span_array){
-            span_array.forEach((span, ndx) => {
-                span.classList.add('tooltip' , `section-${ndx}`)
-            })
+            // const rect = evt.target.getBoundingClientRect();
+
+            const tt = evt.target.querySelector('.tooltip-info');
+            if (tt) {
+                tt.style.display = 'block';           
+                // tt.style.top = (rect.y - 300) + 'px';
+                tt.classList.add("visible");
+            }
+        }
+        
+        function handleMouseOut(evt) {
+            // console.log('mouseout', evt.target)
+
+            const tt = evt.target.querySelector('.tooltip-info');
+            if (tt) {
+                tt.classList.remove("visible");
+                tt.style.display = 'none';
+            }
         }
 
+        function setupTooltip(element, index, options) {
+            const ttData = element.dataset;
 
-        //creates a new Div and adds a class
-        function createDiv(spans , toolTip , location){
-            const newDiv = document.createElement('div');
-            newDiv.classList.add("text-information");
-            newDiv.innerText = toolTip
-
+            // combine values from multiple sources into one object
+            // the ES5 way:
+            const v5options = Object.assign(
+                {
+                    color: '#444',
+                }, 
+                options, 
+                ttData);
+            console.log("v5options", v5options);
             
-            return newDiv
+            // the ES6 way:
+            const v6options = {
+                color: '#444',
+                fontWeight: 'bold',
+
+                ...options,
+                ...ttData,
+            }
+            console.log("v6options", v6options);
+
+            // const info = element.getAttribute("data-tooltip");
+            const info = ttData.tooltip;
+            if (info) {
+                element.classList.add("tooltip-on");
+                if (v6options.color) { 
+                    element.style.color = v6options.color
+                }
+                if (v6options.backgroundColor) {
+                    element.style.backgroundColor = v6options.backgroundColor;
+                }
+                // element.style.left = element.style.left + 100;
+
+                const tooltip = document.createElement("div");
+                tooltip.textContent = info;
+                tooltip.classList.add("tooltip-info");
+    
+                element.appendChild(tooltip);
+
+                element.addEventListener("mouseover", handleMouseOver);
+                element.addEventListener("mouseout", handleMouseOut);
+            }
+
         }
 
-        function createToolTip(selector){
-            console.log('init' , selector)
-
-            const element = document.querySelector(selector);
-            const spans = document.querySelectorAll('span');
-            const toolTip = element.getAttribute('data-tooltip');
-
-            const location = element.getBoundingClientRect();
-
-            makeClass(spans);
-
-            const toolData = createDiv(spans)
-            element.prepend(toolData)
-            // element.addEventListener("click" , toolData)
-            console.log(spans)
-            console.log(toolTip)
+        function init(selector, options) {
+            // console.log("setting up tooltips...", selector)
+            /*  
+                function doA(paramA, paramB) { ... }
+                var doA = function(paramA, paramB) { ... }
+                var doA = (paramA, paramB) => { ... }
+                var doA = (paramA, paramB) => oneLineFunctionBody()
+                var doA = (paramA) => { ... }
+                var doA = paramA => { ... }
+            */
+            document.querySelectorAll(selector).forEach((element, index) => setupTooltip(element, index, options))
         }
 
         return {
-            init: createToolTip
+            init: init
         }
-
-    })();
+    })()
 
 })();
